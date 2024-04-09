@@ -1,0 +1,42 @@
+install.packages("rjson") 
+library(rjson)
+
+# read json files
+
+barcode_1 <- fromJSON(file = "C:/Users/barcode01_amr.json")
+barcode_2 <- fromJSON(file = "C:/Users/barcode02_amr.json")
+barcode_3 <- fromJSON(file = "C:/Users/barcode03_amr.json")
+barcode_4 <- fromJSON(file = "C:/Users/barcode04_amr.json")
+barcode_5 <- fromJSON(file = "C:/Users/barcode05_amr.json")
+barcode_6 <- fromJSON(file = "C:/Users/barcode06_amr.json")
+
+
+# pooling json files together
+
+amr_list <- list(barcode_1,barcode_2,barcode_3,barcode_4,barcode_5,barcode_6)
+names(amr_list) <- c("barcode_1","barcode_2","barcode_3","barcode_4","barcode_5","barcode_6")
+
+
+# creating empty table
+
+rows_amr <- unique(c(names(barcode_1$barcode01$results),names(barcode_2$barcode02$results),names(barcode_3$barcode03$results),names(barcode_4$barcode04$results),names(barcode_5$barcode05$results),names(barcode_6$barcode06$results)))
+amr_table <<- data.frame(barcode_1 = rep(0,length(rows_amr)),barcode_2 = rep(0,length(rows_amr)),barcode_3 = rep(0,length(rows_amr)),barcode_4 = rep(0,length(rows_amr)),barcode_5 = rep(0,length(rows_amr)),barcode_6 = rep(0,length(rows_amr)))
+rownames(amr_table) <- rows_amr
+
+
+
+# Accessing AMR genes, their names/titles, and counts for each barcode
+
+for (barcode in names(amr_list)) {
+  # make sure that each json file itself starts with a name containing "barcode0" as seen here {"barcode04": {"pass": true, "results":... 
+  barcode_results <- amr_list[[barcode]][[paste0("barcode0",substr(barcode,9,nchar(barcode)))]]$results
+  if (!is.null(barcode_results)) {
+    for (gene_name in names(barcode_results)) {
+      count <- barcode_results[[gene_name]]$count
+      amr_table[which(rownames(amr_table) %in% gene_name),barcode] <- count
+    }
+  } else {
+    cat("  No results found.\n")
+  }
+}
+
