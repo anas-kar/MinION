@@ -24,7 +24,7 @@ amr_table <<- data.frame(barcode_1 = rep(0,length(rows_amr)),barcode_2 = rep(0,l
 rownames(amr_table) <- rows_amr
 
 
-
+# DON't change next code
 # Accessing AMR genes, their names/titles, and counts for each barcode
 
 for (barcode in names(amr_list)) {
